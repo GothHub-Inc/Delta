@@ -9,6 +9,7 @@ flake8 = "*"
 requests = "*"
 psycopg2-binary = "*"
 pyyaml = "*"
+asyncio = "*"
 
 [dev-packages]
 
