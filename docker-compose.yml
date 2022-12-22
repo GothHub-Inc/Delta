@@ -1,0 +1,14 @@
+version: '3.3'
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: delta-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DELTA_POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: delta
