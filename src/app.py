@@ -1,6 +1,5 @@
 from discord.ext import commands
 from dotenv import load_dotenv
-# from DAL.postgres import Postgres
 import discord
 import os
 
@@ -32,20 +31,3 @@ def load_extensions(client):
 client = Client()
 load_extensions(client)
 client.run(os.getenv("DELTA_DISCORD_TOKEN"))
-
-# client = commands.Bot(command_prefix="$", intents=discord.Intents.default())
-
-
-# async def load_extensions():
-#     for file in os.listdir('./src/extensions'):
-#         if file.endswith('.py'):
-#             await client.load_extension(f"extensions.{file[:-3]}")
-
-
-# async def main():
-#     async with client:
-#         await load_extensions()
-#         await client.start("")
-
-
-# asyncio.run(main())
