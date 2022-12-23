@@ -5,11 +5,11 @@ name = "pypi"
 
 [packages]
 flake8 = "*"
-"discord.py" = "*"
 requests = "*"
 psycopg2-binary = "*"
 pyyaml = "*"
 asyncio = "*"
+py-cord = {extras = ["speed"], version = "*"}
 
 [dev-packages]
 
