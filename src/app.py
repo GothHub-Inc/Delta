@@ -21,8 +21,11 @@ class Client(commands.Bot):
         await self.wait_until_ready()
         print(f"Logged in as {self.user.name}")
 
+    async def on_connect(self):
+        await self.sync_commands()
 
-def load_extensions(client):
+
+def load_extensions(client: Client):
     for file in os.listdir('./src/extensions'):
         if file.endswith('.py'):
             client.load_extension(f"extensions.{file[:-3]}")
