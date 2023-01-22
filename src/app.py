@@ -9,7 +9,7 @@ load_dotenv()
 class Client(commands.Bot):
     def __init__(self):
         super().__init__(
-            intents=discord.Intents.default(),
+            intents=discord.Intents.all(),
             debug_guilds=[1033025456242434089],
             owner_id=266286800950132736
         )
