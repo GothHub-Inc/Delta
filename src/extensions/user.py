@@ -6,5 +6,5 @@ class User(commands.Cog):
         self.bot = bot
 
 
-async def setup(bot):
-    await bot.add_cog(User(bot))
+def setup(bot):
+    bot.add_cog(User(bot))
