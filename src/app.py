@@ -11,10 +11,12 @@ class Client(commands.Bot):
         super().__init__(
             intents=discord.Intents.all(),
             debug_guilds=[1033025456242434089],
-            owner_id=266286800950132736
+            owner_id=266286800950132736,
+            help_command=commands.DefaultHelpCommand()
         )
+        self.__load_extensions()
 
-    def load_extensions(self):
+    def __load_extensions(self):
         for file in os.listdir('./src/extensions'):
             if file.endswith('.py'):
                 self.load_extension(f"extensions.{file[:-3]}")
@@ -23,7 +25,6 @@ class Client(commands.Bot):
         await super().close()
 
     async def on_ready(self):
-        self.load_extensions()
         await self.wait_until_ready()
         print(f"Logged in as {self.user.name}")
 
