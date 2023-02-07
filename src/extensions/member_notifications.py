@@ -13,13 +13,23 @@ class Notifs(commands.Cog):
     async def on_member_join(self, member):
         channel = self.__get_log_channel(member.guild)
         if channel is not None:
-            await channel.send(f'Welcome {member.mention}!')
+            await channel.send(
+                embed=discord.Embed(
+                    title=f'{member.display_name} joined the server!',
+                    colour=discord.Colour.blue()
+                )
+            )
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         channel = self.__get_log_channel(member.guild)
         if channel is not None:
-            await channel.send(f'Goodbye {member.mention}!')
+            await channel.send(
+                embed=discord.Embed(
+                    title=f'{member.display_name} left the server!',
+                    colour=discord.Colour.red()
+                )
+            )
 
 
 def setup(bot):
