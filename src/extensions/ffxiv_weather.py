@@ -45,7 +45,7 @@ class FFXIVWeather(commands.Cog):
         return embed
 
     @commands.slash_command(
-        guild_ids=[1066721914632032266],
+        guild_ids=[1033025456242434089],
         description="Get the weather forecast of any place in FFXIV"   
     )
     async def ffxivweather(
