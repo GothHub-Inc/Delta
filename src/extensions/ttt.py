@@ -1,8 +1,8 @@
 from discord.ext import commands
 import discord
 
+from enum import Enum
 import random
-
 
 players = [":x:", ":o:"]
 wordboard = [":one:", ":two:", ":three:",
@@ -10,17 +10,23 @@ wordboard = [":one:", ":two:", ":three:",
              ":seven:", ":eight:", ":nine:"]
 
 
+class State (Enum):
+    WIN = 1
+    TIE = 2
+    CONTINUE = 3
+    INVALID = 4
+
+
 class tictactoe(commands.Cog):
     def __init__(self, bot):
         self.client = bot
-        self.__reset_board()
-        self.gameover = True
+        self.gamestate = State.TIE
 
     def __print_board(self):
         line = ""
         for i in range(3):
             for j in range(3):
-                if self.__is_number(self.board[i*3 + j]):
+                if str.isnumeric(self.board[i*3 + j]):
                     line += wordboard[i*3 + j]
                 else:
                     line += self.board[i*3 + j]
@@ -30,41 +36,37 @@ class tictactoe(commands.Cog):
     def __reset_board(self):
         self.board = [str(i+1) for i in range(9)]
         self.currentplayer = random.choice(players)
-        self.gameover = False
+        self.gamestate = State.CONTINUE
 
     def __check_win(self):
         board = self.board
         # diagonal:
-        if ((board[0] == board[4] == board[8]) or (board[2] == board[4] == board[6])) and not self.__is_number(board[4]):
-            return True
+        if ((board[0] == board[4] == board[8]) or (board[2] == board[4] == board[6])) and not str.isnumeric(board[4]):
+            self.gamestate = State.WIN
+            return
         # check columns:
         for i in range(3):
-            if board[i] == board[i+3] == board[i+6] and not self.__is_number(board[i]):
-                return True
+            if board[i] == board[i+3] == board[i+6] and not str.isnumeric(board[i]):
+                self.gamestate = State.WIN
+                return 
         # check rows:
         for i in range(3):
-            if board[i*3] == board[i*3 + 1] == board[i*3 + 2] and not self.__is_number(board[i*3]):
-                return True
-        return False
+            if board[i*3] == board[i*3 + 1] == board[i*3 + 2] and not str.isnumeric(board[i*3]):
+                self.gamestate = State.WIN
+                return
 
     def __check_tie(self):
         for tile in self.board:
-            if self.__is_number(tile):
-                return False
-        return True
-
-    def __is_number(self, value):
-        try:
-            int(value)
-            return True
-        except Exception:
-            return False
+            if str.isnumeric(tile):
+                return
+        self.gamestate = State.TIE
 
     def __select_tile(self, tile: int):
-        if tile >= 1 and tile <= 9 and self.__is_number(self.board[tile-1]):
+        if tile >= 1 and tile <= 9 and str.isnumeric(self.board[tile-1]):
             self.board[tile-1] = self.currentplayer
-            return True
-        return False
+            self.gamestate = State.CONTINUE
+            return
+        self.gamestate = State.INVALID
 
     def __switch_players(self):
         self.currentplayer = players[1] if self.currentplayer == players[0] else players[0]
@@ -92,21 +94,22 @@ class tictactoe(commands.Cog):
             [i for i in range(9)])),
         reset: bool = False,
     ):
-        if reset or self.gameover:
+        if reset or self.gamestate == State.WIN or self.gamestate == State.TIE:
             self.__reset_board()
             self.message = await ctx.respond(embed=self.__create_embed(f"Starting new game. \nIt's {self.currentplayer}'s turn", True))
-        elif self.__select_tile(tile):
-            if self.__check_win():
-                self.gameover = True
+        self.__select_tile(tile)
+        self.__check_tie()
+        self.__check_win()
+        match self.gamestate:
+            case State.WIN:
                 await self.message.edit_original_response(embed=self.__create_embed(f"{self.currentplayer} Wins.", True))
-            elif self.__check_tie():
-                self.gameover = True
+            case State.TIE:
                 await self.message.edit_original_response(embed=self.__create_embed("It's a tie, no winners.", True))
-            else:
+            case State.CONTINUE:
                 self.__switch_players()
                 await self.message.edit_original_response(embed=self.__create_embed(f"It's {self.currentplayer}'s turn", True))
-        else:
-            await self.message.edit_original_response(embed=self.__create_embed(f"Invalid coord.\nIt's {self.currentplayer}'s turn", True))
+            case State.INVALID:
+                await self.message.edit_original_response(embed=self.__create_embed(f"Invalid coord.\nIt's {self.currentplayer}'s turn", True))
         await ctx.respond(embed=self.__played_embed(), delete_after=0)
 
     def __played_embed(self):
