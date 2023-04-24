@@ -11,6 +11,7 @@ pyyaml = "*"
 asyncio = "*"
 py-cord = {extras = ["speed"], version = "*"}
 python-dotenv = "*"
+ffxivweather = "*"
 
 [dev-packages]
 
